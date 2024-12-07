@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stake Code Claimer</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.3.5/dist/web3.min.js"></script>
+</head>
+<body>
+    <h1>Stake Code Claimer</h1>
+    <input type="text" id="amount" placeholder="Stake Amount">
+    <input type="text" id="claimCode" placeholder="Claim Code">
+    <button onclick="stake()">Stake</button>
+    <button onclick="claim()">Claim</button>
+
+    <script>
+        const contractAddress = '0x621627bf92622eb9e199cf0a88d0963e680a905b';
+        const tokenAddress = '0x8020ffaa34f1688e39e4e7e016b2806e6b1bdf2c';
+        const abi = [ {
+      
+        
+
+        const web3 = new Web3(Web3.givenProvider || "http://localhost:7545");
+        const contract = new web3.eth.Contract(abi, contractAddress);
+        const tokenContract = new web3.eth.Contract(abi, tokenAddress); // Assuming you have a token ABI
+
+        async function stake() {
+            const accounts = await web3.eth.getAccounts();
+            const amount = document.getElementById('amount').value;
+            const claimCode = document.getElementById('claimCode').value;
+
+            // Approve tokens for staking
+            await tokenContract.methods.approve(contractAddress, amount).send({ from: accounts[0] });
+            // Stake tokens
+            await contract.methods.stake(amount, claimCode).send({ from: accounts[0] });
+        }
+
+        async function claim() {
+            const accounts = await web3.eth.getAccounts();
+            const claimCode = document.getElementById('claimCode').value;
+
+            const stakeAmount = await contract.methods.claim(claimCode).call({ from: accounts[0] });
+            alert(`Your staked amount is: ${stakeAmount}`);
+        }
+    </script>
+</body>
+</html>
